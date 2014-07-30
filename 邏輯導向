@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#猜數字遊戲
+from string import digits
+from random import randint, choice
+
+#局數
+count = 0
+
+#規則#
+print ("""由電腦隨機生成不重複的四位數字，玩家猜，之後進行提示。 
+一個代表數字正確位置正確，B代表數字正確位置錯誤。
+如正確答案為5234，而猜的人猜5346，則是1A2B，其中有一個5的位置對了，記為1A，
+3和4這兩個數字對了，而位置沒對，因此記為2B，合起來就是1A2B，
+接著猜的人再根據出題者的幾A幾B繼續猜，直到猜中（即4A0B）為止""")
+
+#隨機數字生成
+
+numStr = '0123456789'
+randNum = ''
+for i in range(4) :
+    n = choice(numStr)
+    randNum = randNum + n
+    numStr = numStr.replace(n, '')
+
+#print ('Debug >> randNum',randNum)
+
+
+
+#判斷是否都是數字
+def isallnumber(num):
+    for ch in num :
+        if ch not in digits :
+            return False
+    return True
+
+#判斷是否有相同的字符
+def hasSameDigit(sameNum) :
+    for i in range(len(sameNum)):
+        if (sameNum[0]==sameNum[1]) or (sameNum[0]==sameNum[2]) or (sameNum[0]==sameNum[3]) or (sameNum[1]==sameNum[2]) or (sameNum[1]==sameNum[3]) or (sameNum[2]==sameNum[3]):
+            return True
+    return False
+    
+#之後會使用到的矩陣
+userNums = []    
+results = []
+
+#迴圈開始
+Winner = 0
+while Winner == 0:
+
+    #數字輸入
+    num = []
+    number = 0
+    while (number == 0):
+        num = input('輸入四個數字:')
+        if (isallnumber(num) == False) :
+            print ('***錯誤：您輸入的不是數字，請重新輸入')
+            exit
+        elif (hasSameDigit(num) == True):
+            print ('***錯誤： 請輸入不同數字，請重新輸入')
+        elif (len(num) != 4) :
+            print ('***錯誤： 請輸入四個數字，請重新輸入')
+            exit
+            
+        else:
+            number +=1
+    userNum = num
+    userNums.append(userNum)
+    #print ('Debug >> userNum',userNum)
+    #判斷誰贏誰輸
+    seatA = 0 
+    seatB = 0
+    count +=1
+    for i in range(4) :
+        if userNum[i] in randNum :
+            if i == randNum.find(userNum[i]) :
+                seatA += 1
+            else :
+                seatB += 1
+        if seatA == 4:
+            print ("you win!!")
+            Winner = 1
+        else:
+            exit
+        result = '%dA%dB' % (seatA, seatB)
+    results.append(result)
+
+    #顯示迄今為止所有猜測結果
+    print ('-' * 20)
+    #螢幕顯示所有局
+    for i in range(count) :
+        print ('(%d)/%s/%s' % (i + 1, userNums[i], results[i]))
+    print ('-' * 20)
+    if Winner == 1 :
+        print ('Total: %d times' % count)
+        print ('Congratulations！ Your are winner !!')
